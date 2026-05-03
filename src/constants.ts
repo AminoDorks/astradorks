@@ -15,3 +15,6 @@ export const DISPATCHER_OPTIONS = {
     rejectUnauthorized: false,
   },
 };
+
+export const PROXY_REGEX =
+  /^socks?([45])?:\/\/(?:(.+?):(.+?)@)?([^:]+):(\d+)$/i; // thanks to qwen3.6-plus

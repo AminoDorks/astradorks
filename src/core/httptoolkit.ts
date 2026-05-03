@@ -7,7 +7,12 @@ import { pinoLogger } from '../util/logger';
 import { BasicResponseSchema } from '../schemas/responses';
 import { isStatusCodeSuccess } from '../util/helpers';
 import { AstraError } from '../util/errors';
-import { GETBuilder, HandleBuilder, POSTBuilder } from '../schemas/builders';
+import {
+  Credentials,
+  GETBuilder,
+  HandleBuilder,
+  POSTBuilder,
+} from '../schemas/http';
 
 export class HttpToolKit {
   private headers: Record<string, string> = { ...BASIC_HEADERS };
@@ -21,8 +26,13 @@ export class HttpToolKit {
     pinoLogger.info({ socksProxies }, 'set proxy');
   }
 
-  set authorization(token: string) {
-    this.headers['Authorization'] = token;
+  set credentials(credentials: Credentials) {
+    this.headers = {
+      ...this.headers,
+      NDCAUTH: `sid=${credentials.sessionId}`,
+      NDCDEVICEID: credentials.deviceId,
+      AUID: credentials.aminoId,
+    };
   }
 
   private prepareHeaders = (): Record<string, string> => {
