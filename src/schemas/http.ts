@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const CredentialsSchema = z.object({
   sessionId: z.string(),
   deviceId: z.string(),
-  aminoId: z.string(),
+  userId: z.string(),
 });
 
 export const GETBuilderSchema = z.object({

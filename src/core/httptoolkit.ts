@@ -2,7 +2,7 @@ import { ZodType } from 'zod';
 import { Dispatcher } from 'undici';
 import { socksDispatcher, SocksProxies } from 'fetch-socks';
 
-import { BASIC_HEADERS, DISPATCHER_OPTIONS } from '../constants';
+import { API_URL, BASIC_HEADERS, DISPATCHER_OPTIONS } from '../constants';
 import { pinoLogger } from '../util/logger';
 import { BasicResponseSchema } from '../schemas/responses';
 import { isStatusCodeSuccess } from '../util/helpers';
@@ -31,7 +31,7 @@ export class HttpToolKit {
       ...this.headers,
       NDCAUTH: `sid=${credentials.sessionId}`,
       NDCDEVICEID: credentials.deviceId,
-      AUID: credentials.aminoId,
+      AUID: credentials.userId,
     };
   }
 
@@ -63,8 +63,9 @@ export class HttpToolKit {
     builder: GETBuilder,
     schema: ZodType<T>,
   ): Promise<T> => {
-    const response = await fetch(builder.path, {
-      headers: this.prepareHeaders(),
+    console.log(`${API_URL}${builder.path}`, this.headers);
+    const response = await fetch(`${API_URL}${builder.path}`, {
+      headers: this.headers,
       dispatcher: this.dispatcher as any, // fuck undici-types
     });
 
@@ -81,7 +82,7 @@ export class HttpToolKit {
     builder: POSTBuilder,
     schema: ZodType<T>,
   ): Promise<T> => {
-    const response = await fetch(builder.path, {
+    const response = await fetch(`${API_URL}${builder.path}`, {
       headers: this.prepareHeaders(),
       dispatcher: this.dispatcher as any, // fuck undici-types
       method: 'POST',

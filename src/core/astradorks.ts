@@ -10,7 +10,7 @@ export class AstraDorks {
 
   private ndcService?: NdcService;
 
-  constructor(options: AstraOptions) {
+  constructor(options: AstraOptions = {}) {
     this.httptoolkit = new HttpToolKit();
     this.options = {
       ...options,
