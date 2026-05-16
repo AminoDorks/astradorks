@@ -12,18 +12,26 @@ import {
   GETBuilder,
   HandleBuilder,
   POSTBuilder,
+  PreparedParts,
 } from '../schemas/http';
+import { DPoPKeys } from '../schemas/crypto';
+import { generateSignature } from '../util/crypto';
 
 export class HttpToolKit {
   private headers: Record<string, string> = { ...BASIC_HEADERS };
 
   private dispatcher?: Dispatcher;
+  private _dpopKeys?: DPoPKeys;
 
   set proxy(socksProxies: SocksProxies) {
     if (this.dispatcher) this.dispatcher.close();
 
     this.dispatcher = socksDispatcher(socksProxies, DISPATCHER_OPTIONS);
     pinoLogger.info({ socksProxies }, 'set proxy');
+  }
+
+  set dpopKeys(dpopKeys: DPoPKeys) {
+    this._dpopKeys = dpopKeys;
   }
 
   set credentials(credentials: Credentials) {
@@ -35,10 +43,26 @@ export class HttpToolKit {
     };
   }
 
-  private prepareHeaders = (): Record<string, string> => {
+  private prepare = async (
+    rawBody: Record<string, any>,
+  ): Promise<PreparedParts> => {
+    const timestamp = Date.now();
+    const nonce = `${timestamp}_${timestamp}000`;
+
+    const body = JSON.stringify({
+      ...rawBody,
+      nonce,
+      timestamp,
+    });
+
     return {
-      ...this.headers,
-      'X-Timestamp': Date.now().toString(),
+      headers: {
+        ...this.headers,
+        'X-Timestamp': timestamp.toString(),
+        'NDC-MSG-SIG': generateSignature(body, timestamp),
+        'X-Nonce': nonce,
+      },
+      body,
     };
   };
 
@@ -82,11 +106,13 @@ export class HttpToolKit {
     builder: POSTBuilder,
     schema: ZodType<T>,
   ): Promise<T> => {
+    const { headers, body } = await this.prepare(builder.body);
+
     const response = await fetch(`${API_URL}${builder.path}`, {
-      headers: this.prepareHeaders(),
+      headers,
       dispatcher: this.dispatcher as any, // fuck undici-types
       method: 'POST',
-      body: builder.body,
+      body,
     });
 
     return await this.handle<T>(
