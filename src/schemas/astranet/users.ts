@@ -19,4 +19,58 @@ export const AgentSchema = z.object({
   uid: z.number(),
 });
 
+export const AccountSchema = z.object({
+  activation: z.number(),
+  advancedSettings: z.object({
+    analyticsEnabled: z.number(),
+  }),
+  aminoId: z.string(),
+  aminoIdEditable: z.boolean(),
+  createdTime: z.string(),
+  email: z.string(),
+  emailActivation: z.number(),
+  icon: z.string(),
+  mediaList: z.array(z.any()).nullable(),
+  modifiedTime: z.string(),
+  nickname: z.string(),
+  role: z.number(),
+  securityLevel: z.number(),
+  status: z.number(),
+  uid: z.string(),
+});
+
+export const ProfileSchema = z.object({
+  accountMembershipStatus: z.number(),
+  aminoId: z.string(),
+  blogsCount: z.number(),
+  commentsCount: z.number(),
+  content: z.string(),
+  createdTime: z.string(),
+  followingStatus: z.number(),
+  icon: z.string(),
+  id: z.number(),
+  isGlobal: z.boolean(),
+  isHidden: z.boolean(),
+  isNicknameVerified: z.boolean(),
+  itemsCount: z.number(),
+  joinedCount: z.number(),
+  level: z.number(),
+  membersCount: z.number(),
+  membershipStatus: z.number(),
+  modifiedTime: z.string(),
+  ndcId: z.number(),
+  nickname: z.string(),
+  notificationSubscriptionStatus: z.number(),
+  onlineStatus: z.number(),
+  postsCount: z.number(),
+  pushEnabled: z.boolean(),
+  reputation: z.number(),
+  role: z.number(),
+  status: z.number(),
+  storiesCount: z.number(),
+  uid: z.string(),
+});
+
 export type Agent = z.infer<typeof AgentSchema>;
+export type Account = z.infer<typeof AccountSchema>;
+export type Profile = z.infer<typeof ProfileSchema>;

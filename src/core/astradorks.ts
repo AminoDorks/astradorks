@@ -3,12 +3,14 @@ import { HttpToolKit } from './httptoolkit';
 import { transformProxy } from '../util/helpers';
 import { NdcService } from '../services/ndc-service';
 import initLogger from '../util/logger';
+import { SecurityService } from '../services/security-service';
 
 export class AstraDorks {
   private options: AstraOptions;
   private httptoolkit: HttpToolKit;
 
   private ndcService?: NdcService;
+  private securityService?: SecurityService;
 
   constructor(options: AstraOptions = {}) {
     this.httptoolkit = new HttpToolKit();
@@ -27,6 +29,12 @@ export class AstraDorks {
     if (!this.ndcService)
       this.ndcService = new NdcService(this.httptoolkit, this.options.ndcId);
     return this.ndcService;
+  }
+
+  get security(): SecurityService {
+    if (!this.securityService)
+      this.securityService = new SecurityService(this.httptoolkit);
+    return this.securityService;
   }
 
   set proxy(proxy: string) {
