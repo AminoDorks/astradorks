@@ -39,3 +39,7 @@ export const generateSignature = (
       .update(`${body}|${timestamp}`)
       .digest(),
   ]).toString('base64');
+
+export const isJWTExpired = (jwt: string): boolean =>
+  JSON.parse(Buffer.from(jwt.split('.')[1]!, 'base64').toString('utf8')).exp <
+  Date.now() / 1000;

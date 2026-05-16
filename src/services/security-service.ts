@@ -1,17 +1,9 @@
 import { STATIC_DEVICE_ID } from '../constants';
 import { HttpToolKit } from '../core/httptoolkit';
 import { Account } from '../schemas';
-import { Community } from '../schemas/astranet/community';
-import {
-  BasicResponse,
-  BasicResponseSchema,
-  GetCommunities,
-  GetCommunitiesSchema,
-  LoginResponse,
-  LoginResponseSchema,
-} from '../schemas/responses';
-import { Sizing } from '../schemas/usable';
-import { generateDPoPKeys } from '../util/crypto';
+import { LoginResponse, LoginResponseSchema } from '../schemas/responses';
+import { cacheGet, cacheSet, initCache } from '../util/cache';
+import { generateDPoPKeys, isJWTExpired } from '../util/crypto';
 
 export class SecurityService {
   private httptoolkit: HttpToolKit;
@@ -20,7 +12,19 @@ export class SecurityService {
     this.httptoolkit = httptoolkit;
   }
 
-  public login = async (email: string, password: string): Promise<Account> => {
+  public login = async (
+    email: string,
+    password: string,
+    force: boolean = false,
+  ): Promise<Account> => {
+    await initCache();
+
+    const cachedAccount = cacheGet(`${email}:${password}`);
+
+    if (!force && cachedAccount && !isJWTExpired(cachedAccount.sid)) {
+      return cachedAccount.account;
+    }
+
     const dpopKeys = generateDPoPKeys();
 
     this.httptoolkit.dpopKeys = dpopKeys;
@@ -46,6 +50,13 @@ export class SecurityService {
       deviceId: STATIC_DEVICE_ID,
       userId: response.auid,
     };
+
+    cacheSet(`${email}:${password}`, {
+      account: response.account,
+      sid: response.sid,
+      deviceId: STATIC_DEVICE_ID,
+      DPoPKeys: dpopKeys,
+    });
 
     return response.account;
   };
