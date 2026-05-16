@@ -1,4 +1,5 @@
 export const API_URL = 'https://api.astranetapp.com/api/v1';
+export const STATIC_DEVICE_ID = 'AvgustOsloeb';
 
 export const BASIC_HEADERS = {
   Accept: '*/*',
