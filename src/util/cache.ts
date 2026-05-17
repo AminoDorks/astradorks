@@ -7,7 +7,6 @@ import { CACHE_RELATIVE_PATH } from '../constants';
 let cacheMap: Map<string, CachedUnit>;
 
 const cacheSave = () => {
-  console.log(`SAVIIING ${Object.fromEntries(cacheMap)}`);
   write(
     CACHE_RELATIVE_PATH,
     JSON.stringify(Object.fromEntries(cacheMap), null, 4),
@@ -37,8 +36,10 @@ export const initCache = async () => {
 
   cacheMap = new Map<string, CachedUnit>();
 
-  const data = await Bun.file(CACHE_RELATIVE_PATH).json();
-  if (data) cacheMap = new Map<string, CachedUnit>(Object.entries(data));
+  try {
+    const data = await Bun.file(CACHE_RELATIVE_PATH).json();
+    if (data) cacheMap = new Map<string, CachedUnit>(Object.entries(data));
+  } catch {}
 
   return cacheMap;
 };

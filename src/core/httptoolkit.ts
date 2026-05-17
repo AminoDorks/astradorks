@@ -49,9 +49,9 @@ export class HttpToolKit {
   ): Promise<Record<string, string>> => {
     return {
       ...this.headers,
-      ...(this._dpopKeys && {
+      ...(this.headers['NDCAUTH'] && {
         DPoP: await generateDPoP(
-          this._dpopKeys,
+          this._dpopKeys!,
           options.method,
           `${API_URL}${options.path}`,
           this.headers['NDCAUTH']!.slice(4),
