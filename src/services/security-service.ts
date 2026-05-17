@@ -22,6 +22,14 @@ export class SecurityService {
     const cachedAccount = cacheGet(`${email}:${password}`);
 
     if (!force && cachedAccount && !isJWTExpired(cachedAccount.sid)) {
+      this.httptoolkit.credentials = {
+        sessionId: cachedAccount.sid,
+        deviceId: cachedAccount.deviceId,
+        userId: cachedAccount.account.uid,
+      };
+
+      this.httptoolkit.dpopKeys = cachedAccount.DPoPKeys;
+
       return cachedAccount.account;
     }
 

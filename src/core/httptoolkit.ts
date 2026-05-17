@@ -12,10 +12,11 @@ import {
   GETBuilder,
   HandleBuilder,
   POSTBuilder,
+  PreparationOptions,
   PreparedParts,
 } from '../schemas/http';
 import { DPoPKeys } from '../schemas/crypto';
-import { generateSignature } from '../util/crypto';
+import { generateDPoP, generateSignature } from '../util/crypto';
 
 export class HttpToolKit {
   private headers: Record<string, string> = { ...BASIC_HEADERS };
@@ -43,9 +44,27 @@ export class HttpToolKit {
     };
   }
 
-  private prepare = async (
+  private prepareDPoP = async (
+    options: PreparationOptions,
+  ): Promise<Record<string, string>> => {
+    return {
+      ...this.headers,
+      ...(this._dpopKeys && {
+        DPoP: await generateDPoP(
+          this._dpopKeys,
+          options.method,
+          `${API_URL}${options.path}`,
+          this.headers['NDCAUTH']!.slice(4),
+        ),
+      }),
+    };
+  };
+
+  private preparePost = async (
+    options: PreparationOptions,
     rawBody: Record<string, any>,
   ): Promise<PreparedParts> => {
+    const headers = await this.prepareDPoP(options);
     const timestamp = Date.now();
     const nonce = `${timestamp}_${timestamp}000`;
 
@@ -57,7 +76,7 @@ export class HttpToolKit {
 
     return {
       headers: {
-        ...this.headers,
+        ...headers,
         'X-Timestamp': timestamp.toString(),
         'NDC-MSG-SIG': generateSignature(body, timestamp),
         'X-Nonce': nonce,
@@ -87,9 +106,8 @@ export class HttpToolKit {
     builder: GETBuilder,
     schema: ZodType<T>,
   ): Promise<T> => {
-    console.log(`${API_URL}${builder.path}`, this.headers);
     const response = await fetch(`${API_URL}${builder.path}`, {
-      headers: this.headers,
+      headers: await this.prepareDPoP({ method: 'GET', path: builder.path }),
       dispatcher: this.dispatcher as any, // fuck undici-types
     });
 
@@ -106,7 +124,10 @@ export class HttpToolKit {
     builder: POSTBuilder,
     schema: ZodType<T>,
   ): Promise<T> => {
-    const { headers, body } = await this.prepare(builder.body);
+    const { headers, body } = await this.preparePost(
+      { method: 'POST', path: builder.path },
+      builder.body,
+    );
 
     const response = await fetch(`${API_URL}${builder.path}`, {
       headers,

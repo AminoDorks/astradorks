@@ -30,9 +30,15 @@ export const PreparedPartsSchema = z.object({
   body: z.string(),
 });
 
+export const PreparationOptionsSchema = z.object({
+  method: z.string(),
+  path: z.string(),
+});
+
 export type GETBuilder = z.infer<typeof GETBuilderSchema>;
 export type POSTBuilder = z.infer<typeof POSTBuilderSchema>;
 export type MultipartBuilder = z.infer<typeof MultipartBuilderSchema>;
 export type HandleBuilder = z.infer<typeof HandleSchema>;
 export type Credentials = z.infer<typeof CredentialsSchema>;
 export type PreparedParts = z.infer<typeof PreparedPartsSchema>;
+export type PreparationOptions = z.infer<typeof PreparationOptionsSchema>;

@@ -16,7 +16,7 @@ export const AgentSchema = z.object({
   reputation: z.number(),
   role: z.number(),
   status: z.number(),
-  uid: z.number(),
+  uid: z.string(),
 });
 
 export const AccountSchema = z.object({
