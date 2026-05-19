@@ -5,4 +5,16 @@ export const SizingSchema = z.object({
   size: z.number(),
 });
 
+export const EditProfileBuilderSchema = z.object({
+  content: z.string().optional(),
+  icon: z.string().optional(),
+  nickname: z.string().optional(),
+  backgroundColor: z.string().optional(),
+  backgroundMediaList: z.array(z.string()).optional(),
+});
+
+export const SegmentEnum = z.enum(['en', 'ru']);
+
 export type Sizing = z.infer<typeof SizingSchema>;
+export type EditProfileBuilder = z.infer<typeof EditProfileBuilderSchema>;
+export type Segment = z.infer<typeof SegmentEnum>;

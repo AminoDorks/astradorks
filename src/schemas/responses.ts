@@ -9,7 +9,7 @@ export const BasicResponseSchema = z.object({
   'api:timestamp': z.string(),
 });
 
-export const LoginResponseSchema = z.object({
+export const LoginSchema = z.object({
   ...BasicResponseSchema.shape,
   auid: z.string(),
   isNewAccount: z.boolean(),
@@ -23,6 +23,18 @@ export const GetCommunitiesSchema = z.object({
   communityList: z.array(CommunitySchema),
 });
 
+export const MediaUploadSchema = z.object({
+  ...BasicResponseSchema.shape,
+  mediaValue: z.string(),
+});
+
+export const GetUserProfileSchema = z.object({
+  ...BasicResponseSchema.shape,
+  userProfile: ProfileSchema,
+});
+
 export type BasicResponse = z.infer<typeof BasicResponseSchema>;
 export type GetCommunities = z.infer<typeof GetCommunitiesSchema>;
-export type LoginResponse = z.infer<typeof LoginResponseSchema>;
+export type Login = z.infer<typeof LoginSchema>;
+export type MediaUpload = z.infer<typeof MediaUploadSchema>;
+export type GetUserProfile = z.infer<typeof GetUserProfileSchema>;
