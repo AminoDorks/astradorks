@@ -1,15 +1,23 @@
 import { STATIC_DEVICE_ID } from '../constants';
 import { HttpToolKit } from '../core/httptoolkit';
 import { Account } from '../schemas';
-import { LoginResponse, LoginResponseSchema } from '../schemas/responses';
+import { Login, LoginSchema } from '../schemas/responses';
 import { cacheGet, cacheSet, initCache } from '../util/cache';
 import { generateDPoPKeys, isJWTExpired } from '../util/crypto';
+import { AstraError } from '../util/errors';
 
 export class SecurityService {
   private httptoolkit: HttpToolKit;
 
+  private _account?: Account;
+
   constructor(httptoolkit: HttpToolKit) {
     this.httptoolkit = httptoolkit;
+  }
+
+  get account(): Account {
+    if (!this._account) throw new AstraError('Unauthorized');
+    return this._account;
   }
 
   public login = async (
@@ -30,14 +38,14 @@ export class SecurityService {
 
       this.httptoolkit.dpopKeys = cachedAccount.DPoPKeys;
 
-      return cachedAccount.account;
+      return (this._account = cachedAccount.account);
     }
 
     const dpopKeys = generateDPoPKeys();
 
     this.httptoolkit.dpopKeys = dpopKeys;
 
-    const response = await this.httptoolkit.post<LoginResponse>(
+    const response = await this.httptoolkit.post<Login>(
       {
         path: '/g/s/auth/login',
         body: {
@@ -50,7 +58,7 @@ export class SecurityService {
           ...dpopKeys,
         },
       },
-      LoginResponseSchema,
+      LoginSchema,
     );
 
     this.httptoolkit.credentials = {
@@ -66,6 +74,6 @@ export class SecurityService {
       DPoPKeys: dpopKeys,
     });
 
-    return response.account;
+    return (this._account = response.account);
   };
 }

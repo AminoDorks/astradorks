@@ -4,6 +4,10 @@ import { transformProxy } from '../util/helpers';
 import { NdcService } from '../services/ndc-service';
 import initLogger from '../util/logger';
 import { SecurityService } from '../services/security-service';
+import { MediaUpload, MediaUploadSchema } from '../schemas/responses';
+import { BuffersUnion } from '../schemas/http';
+import { UserService } from '../services/user-service';
+import { Account } from '../schemas';
 
 export class AstraDorks {
   private options: AstraOptions;
@@ -11,9 +15,10 @@ export class AstraDorks {
 
   private ndcService?: NdcService;
   private securityService?: SecurityService;
+  private userService?: UserService;
 
   constructor(options: AstraOptions = {}) {
-    this.httptoolkit = new HttpToolKit();
+    this.httptoolkit = options.httptoolkit || new HttpToolKit();
     this.options = {
       ...options,
       httptoolkit: this.httptoolkit,
@@ -23,6 +28,10 @@ export class AstraDorks {
 
     if (this.options.credentials)
       this.httptoolkit.credentials = this.options.credentials;
+  }
+
+  get account(): Account {
+    return this.options.account || this.security.account;
   }
 
   get ndc(): NdcService {
@@ -37,11 +46,29 @@ export class AstraDorks {
     return this.securityService;
   }
 
+  get user(): UserService {
+    if (!this.userService)
+      this.userService = new UserService(
+        this.httptoolkit,
+        this.account,
+        this.options.ndcId,
+      );
+    return this.userService;
+  }
+
   set proxy(proxy: string) {
     this.httptoolkit.proxy = transformProxy(proxy);
   }
 
   public as = (ndcId: number): AstraDorks => {
-    return new AstraDorks({ ...this.options, ndcId });
+    return new AstraDorks({ ...this.options, ndcId, account: this.account });
   };
+
+  public upload = async (buffer: BuffersUnion): Promise<string> =>
+    (
+      await this.httptoolkit.media<MediaUpload>(
+        { path: '/g/s/media/upload', body: buffer },
+        MediaUploadSchema,
+      )
+    ).mediaValue;
 }

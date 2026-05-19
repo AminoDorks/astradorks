@@ -19,3 +19,7 @@ export const transformProxy = (proxy: string): SocksProxies => {
     port: Number(port),
   };
 };
+
+export const formatMediaList = (
+  mediaList: string[],
+): [number, string, null][] => mediaList.map((media) => [100, media, null]);
