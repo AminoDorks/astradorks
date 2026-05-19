@@ -11,6 +11,7 @@ import {
   Credentials,
   GETBuilder,
   HandleBuilder,
+  MediaBuilder,
   POSTBuilder,
   PreparationOptions,
   PreparedParts,
@@ -128,12 +129,33 @@ export class HttpToolKit {
       { method: 'POST', path: builder.path },
       builder.body,
     );
+    console.log(body, headers);
 
     const response = await fetch(`${API_URL}${builder.path}`, {
       headers,
       dispatcher: this.dispatcher as any, // fuck undici-types
       method: 'POST',
       body,
+    });
+
+    return await this.handle<T>(
+      {
+        url: builder.path,
+        json: await response.json(),
+      },
+      schema,
+    );
+  };
+
+  public media = async <T>(
+    builder: MediaBuilder,
+    schema: ZodType<T>,
+  ): Promise<T> => {
+    const response = await fetch(`${API_URL}${builder.path}`, {
+      method: 'POST',
+      headers: await this.prepareDPoP({ method: 'POST', path: builder.path }),
+      body: builder.body,
+      dispatcher: this.dispatcher as any, // fuck undici-types
     });
 
     return await this.handle<T>(

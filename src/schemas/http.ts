@@ -1,5 +1,10 @@
 import { z } from 'zod';
 
+export const BuffersUnionSchema = z.union([
+  z.instanceof(Buffer),
+  z.instanceof(ArrayBuffer),
+]);
+
 export const CredentialsSchema = z.object({
   sessionId: z.string(),
   deviceId: z.string(),
@@ -15,9 +20,9 @@ export const POSTBuilderSchema = z.object({
   body: z.record(z.string(), z.any()),
 });
 
-export const MultipartBuilderSchema = z.object({
+export const MediaBuilderSchema = z.object({
   ...GETBuilderSchema.shape,
-  body: z.instanceof(Buffer),
+  body: BuffersUnionSchema,
 });
 
 export const HandleSchema = z.object({
@@ -37,8 +42,9 @@ export const PreparationOptionsSchema = z.object({
 
 export type GETBuilder = z.infer<typeof GETBuilderSchema>;
 export type POSTBuilder = z.infer<typeof POSTBuilderSchema>;
-export type MultipartBuilder = z.infer<typeof MultipartBuilderSchema>;
+export type MediaBuilder = z.infer<typeof MediaBuilderSchema>;
 export type HandleBuilder = z.infer<typeof HandleSchema>;
 export type Credentials = z.infer<typeof CredentialsSchema>;
 export type PreparedParts = z.infer<typeof PreparedPartsSchema>;
 export type PreparationOptions = z.infer<typeof PreparationOptionsSchema>;
+export type BuffersUnion = z.infer<typeof BuffersUnionSchema>;
