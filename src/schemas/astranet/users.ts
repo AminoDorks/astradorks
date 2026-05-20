@@ -5,7 +5,6 @@ export const AgentSchema = z.object({
   aminoId: z.string(),
   followingStatus: z.number(),
   icon: z.string(),
-  isAstranet: z.boolean(),
   isGlobal: z.boolean(),
   isNicknameVerified: z.boolean(),
   level: z.number(),

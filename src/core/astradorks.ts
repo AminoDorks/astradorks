@@ -8,6 +8,7 @@ import { MediaUpload, MediaUploadSchema } from '../schemas/responses';
 import { BuffersUnion } from '../schemas/http';
 import { UserService } from '../services/user-service';
 import { Account } from '../schemas';
+import { ThreadService } from '../services/thread-service';
 
 export class AstraDorks {
   private options: AstraOptions;
@@ -16,6 +17,7 @@ export class AstraDorks {
   private ndcService?: NdcService;
   private securityService?: SecurityService;
   private userService?: UserService;
+  private threadService?: ThreadService;
 
   constructor(options: AstraOptions = {}) {
     this.httptoolkit = options.httptoolkit || new HttpToolKit();
@@ -54,6 +56,15 @@ export class AstraDorks {
         this.options.ndcId,
       );
     return this.userService;
+  }
+
+  get thread(): ThreadService {
+    if (!this.threadService)
+      this.threadService = new ThreadService(
+        this.httptoolkit,
+        this.options.ndcId,
+      );
+    return this.threadService;
   }
 
   set proxy(proxy: string) {

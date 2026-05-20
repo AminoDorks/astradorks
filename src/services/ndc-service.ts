@@ -5,13 +5,13 @@ import { Segment, Sizing } from '../schemas/usable';
 
 export class NdcService {
   private httptoolkit: HttpToolKit;
-  private endpoint: string;
+  private endpoint: string = '/g/s';
   private ndcId?: number;
 
   constructor(httptoolkit: HttpToolKit, ndcId?: number) {
     this.httptoolkit = httptoolkit;
-    this.endpoint = `/g/s-x${ndcId}`;
     this.ndcId = ndcId;
+    if (ndcId) this.endpoint = `/g/s-x${ndcId}`;
   }
 
   private getCommunities = async (path: string): Promise<Community[]> =>
@@ -31,6 +31,6 @@ export class NdcService {
       `/g/s/community/joined?start=${sizing.start}&size=${sizing.size}`,
     );
 
-  public featured = async (segment: Segment): Promise<Community[]> =>
+  public featured = async (segment: Segment = 'en'): Promise<Community[]> =>
     await this.getCommunities(`/g/s/community/featured?segment=${segment}`);
 }
