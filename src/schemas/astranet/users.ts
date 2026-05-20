@@ -71,6 +71,20 @@ export const ProfileSchema = z.object({
   uid: z.string(),
 });
 
+export const ShortProfileSchema = z.object({
+  accountMembershipStatus: z.number(),
+  icon: z.string(),
+  isNicknameVerified: z.boolean(),
+  level: z.number(),
+  membershipStatus: z.number(),
+  nickname: z.string(),
+  reputation: z.number(),
+  role: z.number(),
+  status: z.number(),
+  uid: z.string(),
+});
+
 export type Agent = z.infer<typeof AgentSchema>;
 export type Account = z.infer<typeof AccountSchema>;
 export type Profile = z.infer<typeof ProfileSchema>;
+export type ShortProfile = z.infer<typeof ShortProfileSchema>;

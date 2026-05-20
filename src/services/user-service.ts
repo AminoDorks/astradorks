@@ -1,6 +1,23 @@
 import { HttpToolKit } from '../core/httptoolkit';
-import { Account, EditProfileBuilder, Profile } from '../schemas';
-import { GetUserProfile, GetUserProfileSchema } from '../schemas/responses';
+import {
+  Account,
+  Blog,
+  Comment,
+  EditProfileBuilder,
+  Profile,
+  Sizing,
+  Sort,
+} from '../schemas';
+import {
+  GetBlogs,
+  GetBlogsSchema,
+  GetComment,
+  GetComments,
+  GetCommentSchema,
+  GetCommentsSchema,
+  GetUserProfile,
+  GetUserProfileSchema,
+} from '../schemas/responses';
 import { formatMediaList } from '../util/helpers';
 
 export class UserService {
@@ -39,4 +56,51 @@ export class UserService {
         GetUserProfileSchema,
       )
     ).userProfile;
+
+  public comments = async (
+    userId: string,
+    sizing: Sizing = { start: 0, size: 25 },
+    sort: Sort = 'newest',
+  ): Promise<Comment[]> =>
+    (
+      await this.httptoolkit.get<GetComments>(
+        {
+          path: `${this.endpoint}/user-profile/${userId}/g-comment?sort=${sort}&start=${sizing.start}&size=${sizing.size}`,
+        },
+        GetCommentsSchema,
+      )
+    ).commentList;
+
+  public blogs = async (
+    userId: string,
+    sizing: Sizing = { start: 0, size: 25 },
+  ): Promise<Blog[]> =>
+    (
+      await this.httptoolkit.get<GetBlogs>(
+        {
+          path: `${this.endpoint}/blog?start=${sizing.start}&size=${sizing.size}&type=user&q=${userId}`,
+        },
+        GetBlogsSchema,
+      )
+    ).blogList;
+
+  public comment = async (
+    userId: string,
+    content: string,
+    mediaList: string[] = [],
+  ): Promise<Comment> =>
+    (
+      await this.httptoolkit.post<GetComment>(
+        {
+          path: `${this.endpoint}/user-profile/${userId}/comment`,
+          body: {
+            content,
+            eventSource: 'UserProfileView',
+            mediaList: formatMediaList(mediaList),
+            type: mediaList.length ? 2 : 0,
+          },
+        },
+        GetCommentSchema,
+      )
+    ).comment;
 }

@@ -129,7 +129,6 @@ export class HttpToolKit {
       { method: 'POST', path: builder.path },
       builder.body,
     );
-    console.log(body, headers);
 
     const response = await fetch(`${API_URL}${builder.path}`, {
       headers,
