@@ -9,6 +9,8 @@ import {
   Sort,
 } from '../schemas';
 import {
+  BasicResponse,
+  BasicResponseSchema,
   GetBlogs,
   GetBlogsSchema,
   GetComment,
@@ -103,4 +105,21 @@ export class UserService {
         GetCommentSchema,
       )
     ).comment;
+
+  public follow = async (userId: string): Promise<BasicResponse> =>
+    await this.httptoolkit.post<BasicResponse>(
+      {
+        path: `${this.endpoint}/user-profile/${userId}/member`,
+        body: {},
+      },
+      BasicResponseSchema,
+    );
+
+  public unfollow = async (userId: string): Promise<BasicResponse> =>
+    await this.httptoolkit.delete<BasicResponse>(
+      {
+        path: `${this.endpoint}/user-profile/${userId}/member`,
+      },
+      BasicResponseSchema,
+    );
 }
