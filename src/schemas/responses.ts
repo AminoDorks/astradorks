@@ -1,7 +1,9 @@
 import z from 'zod';
+
 import { CommunitySchema } from './astranet/community';
 import {
   AccountSchema,
+  ActivityMemberSchema,
   ProfileSchema,
   ShortProfileSchema,
 } from './astranet/users';
@@ -9,6 +11,8 @@ import { CommentSchema } from './astranet/comment';
 import { BlogSchema } from './astranet/blog';
 import { ThreadSchema } from './astranet/thread';
 import { MessageSchema } from './astranet/message';
+import { ActiveCategorySchema } from './astranet/active-category';
+import { object } from 'zod/v3';
 
 export const BasicResponseSchema = z.object({
   'api:duration': z.string(),
@@ -81,6 +85,30 @@ export const GetMessageSchema = z.object({
   message: MessageSchema,
 });
 
+export const GetFeedSchema = z.object({
+  ...BasicResponseSchema.shape,
+  feedList: z.array(
+    z.object({
+      objectId: z.string(),
+      objectType: z.number(),
+      blog: BlogSchema,
+    }),
+  ),
+});
+
+export const GetActivitySchema = z.object({
+  ...BasicResponseSchema.shape,
+  categories: z.array(ActiveCategorySchema),
+  communityId: z.number(),
+  onlineCount: z.number(),
+  onlineMembers: z.array(ActivityMemberSchema),
+});
+
+export const GetUserProfilesSchema = z.object({
+  ...BasicResponseSchema.shape,
+  userProfileList: z.array(ShortProfileSchema),
+});
+
 export type BasicResponse = z.infer<typeof BasicResponseSchema>;
 export type GetCommunities = z.infer<typeof GetCommunitiesSchema>;
 export type Login = z.infer<typeof LoginSchema>;
@@ -94,3 +122,6 @@ export type GetMessages = z.infer<typeof GetMessagesSchema>;
 export type GetThread = z.infer<typeof GetThreadSchema>;
 export type GetMembers = z.infer<typeof GetMembersSchema>;
 export type GetMessage = z.infer<typeof GetMessageSchema>;
+export type GetActivity = z.infer<typeof GetActivitySchema>;
+export type GetFeed = z.infer<typeof GetFeedSchema>;
+export type GetUserProfiles = z.infer<typeof GetUserProfilesSchema>;

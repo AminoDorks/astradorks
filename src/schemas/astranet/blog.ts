@@ -9,11 +9,13 @@ export const BlogSchema = z.object({
   commentsCount: z.number(),
   content: z.string(),
   createdTime: z.string(),
-  extensions: z.object({
-    backgroundMediaList: z.array(MediaListSchema),
-  }),
+  extensions: z
+    .object({
+      backgroundMediaList: z.array(MediaListSchema).optional(),
+    })
+    .optional(),
   isFeatured: z.boolean(),
-  mediaList: z.array(MediaListSchema).optional(),
+  mediaList: z.array(MediaListSchema).nullable(),
   status: z.number(),
   title: z.string(),
   uid: z.string(),

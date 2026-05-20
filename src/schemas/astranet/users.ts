@@ -83,7 +83,16 @@ export const ShortProfileSchema = z.object({
   uid: z.string(),
 });
 
+export const ActivityMemberSchema = z.object({
+  icon: z.string(),
+  level: z.number(),
+  nickname: z.string(),
+  onlineStatus: z.number(),
+  uid: z.string(),
+});
+
 export type Agent = z.infer<typeof AgentSchema>;
 export type Account = z.infer<typeof AccountSchema>;
 export type Profile = z.infer<typeof ProfileSchema>;
 export type ShortProfile = z.infer<typeof ShortProfileSchema>;
+export type ActivityMember = z.infer<typeof ActivityMemberSchema>;
