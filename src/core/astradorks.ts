@@ -62,6 +62,7 @@ export class AstraDorks {
     if (!this.threadService)
       this.threadService = new ThreadService(
         this.httptoolkit,
+        this.account,
         this.options.ndcId,
       );
     return this.threadService;

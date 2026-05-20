@@ -3,6 +3,8 @@ import z from 'zod';
 export enum MessageType {
   Text = 0,
   Deleted = 103,
+  MemberJoined = 101,
+  MemberLeft = 102,
 }
 
 export const SizingSchema = z.object({

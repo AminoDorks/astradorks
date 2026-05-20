@@ -103,12 +103,14 @@ export class HttpToolKit {
     return schema.parse(builder.json);
   };
 
-  public get = async <T>(
+  private noBodyRequest = async <T>(
+    method: 'GET' | 'DELETE',
     builder: GETBuilder,
     schema: ZodType<T>,
   ): Promise<T> => {
     const response = await fetch(`${API_URL}${builder.path}`, {
-      headers: await this.prepareDPoP({ method: 'GET', path: builder.path }),
+      method,
+      headers: await this.prepareDPoP({ method, path: builder.path }),
       dispatcher: this.dispatcher as any, // fuck undici-types
     });
 
@@ -119,6 +121,20 @@ export class HttpToolKit {
       },
       schema,
     );
+  };
+
+  public get = async <T>(
+    builder: GETBuilder,
+    schema: ZodType<T>,
+  ): Promise<T> => {
+    return this.noBodyRequest('GET', builder, schema);
+  };
+
+  public delete = async <T>(
+    builder: GETBuilder,
+    schema: ZodType<T>,
+  ): Promise<T> => {
+    return this.noBodyRequest('DELETE', builder, schema);
   };
 
   public post = async <T>(

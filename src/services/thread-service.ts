@@ -1,5 +1,6 @@
 import { HttpToolKit } from '../core/httptoolkit';
 import {
+  Account,
   Message,
   SendMessageBuilder,
   ShortProfile,
@@ -7,6 +8,8 @@ import {
   Thread,
 } from '../schemas';
 import {
+  BasicResponse,
+  BasicResponseSchema,
   GetMembers,
   GetMembersSchema,
   GetMessage,
@@ -22,10 +25,13 @@ import {
 export class ThreadService {
   private httptoolkit: HttpToolKit;
   private endpoint: string = '/g/s';
+  private account: Account;
   private ndcId?: number;
 
-  constructor(httptoolkit: HttpToolKit, ndcId?: number) {
+  constructor(httptoolkit: HttpToolKit, account: Account, ndcId?: number) {
     this.httptoolkit = httptoolkit;
+    this.account = account;
+
     this.ndcId = ndcId;
     if (ndcId) this.endpoint = `/x${ndcId}/s`;
   }
@@ -112,4 +118,21 @@ export class ThreadService {
       replyMessageId,
       content: '',
     });
+
+  public join = async (threadId: string): Promise<BasicResponse> =>
+    await this.httptoolkit.post<BasicResponse>(
+      {
+        path: `${this.endpoint}/chat/thread/${threadId}/member/${this.account.uid}`,
+        body: {},
+      },
+      BasicResponseSchema,
+    );
+
+  public leave = async (threadId: string): Promise<BasicResponse> =>
+    await this.httptoolkit.delete<BasicResponse>(
+      {
+        path: `${this.endpoint}/chat/thread/${threadId}/member/${this.account.uid}`,
+      },
+      BasicResponseSchema,
+    );
 }
