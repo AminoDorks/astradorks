@@ -1,6 +1,10 @@
 import z from 'zod';
 import { CommunitySchema } from './astranet/community';
-import { AccountSchema, ProfileSchema } from './astranet/users';
+import {
+  AccountSchema,
+  ProfileSchema,
+  ShortProfileSchema,
+} from './astranet/users';
 import { CommentSchema } from './astranet/comment';
 import { BlogSchema } from './astranet/blog';
 import { ThreadSchema } from './astranet/thread';
@@ -67,6 +71,16 @@ export const GetThreadSchema = z.object({
   thread: ThreadSchema,
 });
 
+export const GetMembersSchema = z.object({
+  ...BasicResponseSchema.shape,
+  memberList: z.array(ShortProfileSchema),
+});
+
+export const GetMessageSchema = z.object({
+  ...BasicResponseSchema.shape,
+  message: MessageSchema,
+});
+
 export type BasicResponse = z.infer<typeof BasicResponseSchema>;
 export type GetCommunities = z.infer<typeof GetCommunitiesSchema>;
 export type Login = z.infer<typeof LoginSchema>;
@@ -78,3 +92,5 @@ export type GetComment = z.infer<typeof GetCommentSchema>;
 export type GetThreads = z.infer<typeof GetThreadsSchema>;
 export type GetMessages = z.infer<typeof GetMessagesSchema>;
 export type GetThread = z.infer<typeof GetThreadSchema>;
+export type GetMembers = z.infer<typeof GetMembersSchema>;
+export type GetMessage = z.infer<typeof GetMessageSchema>;

@@ -1,7 +1,17 @@
 import { HttpToolKit } from '../core/httptoolkit';
-import { Message, Sizing, Thread } from '../schemas';
 import {
+  Message,
+  SendMessageBuilder,
+  ShortProfile,
+  Sizing,
+  Thread,
+} from '../schemas';
+import {
+  GetMembers,
+  GetMembersSchema,
+  GetMessage,
   GetMessages,
+  GetMessageSchema,
   GetMessagesSchema,
   GetThread,
   GetThreads,
@@ -19,6 +29,22 @@ export class ThreadService {
     this.ndcId = ndcId;
     if (ndcId) this.endpoint = `/x${ndcId}/s`;
   }
+
+  private sendMessage = async (
+    builder: SendMessageBuilder,
+  ): Promise<Message> => {
+    const { threadId, ...body } = builder;
+
+    return (
+      await this.httptoolkit.post<GetMessage>(
+        {
+          path: `${this.endpoint}/chat/thread/${threadId}/message`,
+          body,
+        },
+        GetMessageSchema,
+      )
+    ).message;
+  };
 
   public get = async (threadId: string): Promise<Thread> =>
     (
@@ -52,4 +78,38 @@ export class ThreadService {
         GetMessagesSchema,
       )
     ).messageList;
+
+  public members = async (
+    threadId: string,
+    sizing: Sizing = { start: 0, size: 200 },
+  ): Promise<ShortProfile[]> =>
+    (
+      await this.httptoolkit.get<GetMembers>(
+        {
+          path: `${this.endpoint}/chat/thread/${threadId}/member?start=${sizing.start}&size=${sizing.size}`,
+        },
+        GetMembersSchema,
+      )
+    ).memberList;
+
+  public text = async (
+    threadId: string,
+    content: string,
+    type: number = 0,
+    replyMessageId?: string,
+  ): Promise<Message> =>
+    await this.sendMessage({ threadId, content, type, replyMessageId });
+
+  public image = async (
+    threadId: string,
+    mediaValue: string,
+    replyMessageId?: string,
+  ): Promise<Message> =>
+    await this.sendMessage({
+      threadId,
+      mediaValue,
+      type: 0,
+      replyMessageId,
+      content: '',
+    });
 }
