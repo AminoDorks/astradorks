@@ -109,6 +109,11 @@ export const GetUserProfilesSchema = z.object({
   userProfileList: z.array(ShortProfileSchema),
 });
 
+export const GetBlogSchema = z.object({
+  ...BasicResponseSchema.shape,
+  blog: BlogSchema,
+});
+
 export type BasicResponse = z.infer<typeof BasicResponseSchema>;
 export type GetCommunities = z.infer<typeof GetCommunitiesSchema>;
 export type Login = z.infer<typeof LoginSchema>;
@@ -125,3 +130,4 @@ export type GetMessage = z.infer<typeof GetMessageSchema>;
 export type GetActivity = z.infer<typeof GetActivitySchema>;
 export type GetFeed = z.infer<typeof GetFeedSchema>;
 export type GetUserProfiles = z.infer<typeof GetUserProfilesSchema>;
+export type GetBlog = z.infer<typeof GetBlogSchema>;

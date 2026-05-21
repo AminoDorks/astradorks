@@ -48,7 +48,7 @@ export class UserService {
             extensions: {
               style: {
                 backgroundMediaList: formatMediaList(
-                  builder.backgroundMediaList || [],
+                  builder.backgroundMediaList ?? [],
                 ),
                 backgroundColor: builder.backgroundColor,
               },

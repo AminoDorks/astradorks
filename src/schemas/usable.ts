@@ -28,6 +28,13 @@ export const SendMessageBuilderSchema = z.object({
   replyMessageId: z.string().optional(),
 });
 
+export const BlogBuilderSchema = z.object({
+  content: z.string(),
+  title: z.string(),
+  mediaList: z.array(z.string()).optional(),
+  backgroundImage: z.string().optional(),
+});
+
 export const SegmentEnum = z.enum(['en', 'ru']);
 export const SortEnum = z.enum(['newest']);
 export const ThreadTypeEnum = z.enum(['public-all']);
@@ -40,3 +47,4 @@ export type Sort = z.infer<typeof SortEnum>;
 export type SendMessageBuilder = z.infer<typeof SendMessageBuilderSchema>;
 export type ThreadType = z.infer<typeof ThreadTypeEnum>;
 export type MembersType = z.infer<typeof MembersTypeEnum>;
+export type BlogBuilder = z.infer<typeof BlogBuilderSchema>;
