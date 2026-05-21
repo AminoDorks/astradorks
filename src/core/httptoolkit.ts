@@ -1,8 +1,7 @@
 import { ZodType } from 'zod';
-import { Dispatcher } from 'undici';
-import { socksDispatcher, SocksProxies } from 'fetch-socks';
+import { fetch } from 'netbun';
 
-import { API_URL, BASIC_HEADERS, DISPATCHER_OPTIONS } from '../constants';
+import { API_URL, BASIC_HEADERS } from '../constants';
 import { pinoLogger } from '../util/logger';
 import { BasicResponseSchema } from '../schemas/responses';
 import { isStatusCodeSuccess } from '../util/helpers';
@@ -22,14 +21,12 @@ import { generateDPoP, generateSignature } from '../util/crypto';
 export class HttpToolKit {
   private headers: Record<string, string> = { ...BASIC_HEADERS };
 
-  private dispatcher?: Dispatcher;
+  private _proxy?: string;
   private _dpopKeys?: DPoPKeys;
 
-  set proxy(socksProxies: SocksProxies) {
-    if (this.dispatcher) this.dispatcher.close();
-
-    this.dispatcher = socksDispatcher(socksProxies, DISPATCHER_OPTIONS);
-    pinoLogger.info({ socksProxies }, 'set proxy');
+  set proxy(proxy: string) {
+    this._proxy = proxy;
+    pinoLogger.info({ proxy }, 'set proxy');
   }
 
   set dpopKeys(dpopKeys: DPoPKeys) {
@@ -110,8 +107,8 @@ export class HttpToolKit {
   ): Promise<T> => {
     const response = await fetch(`${API_URL}${builder.path}`, {
       method,
+      proxy: this._proxy,
       headers: await this.prepareDPoP({ method, path: builder.path }),
-      dispatcher: this.dispatcher as any, // fuck undici-types
     });
 
     return await this.handle<T>(
@@ -123,19 +120,17 @@ export class HttpToolKit {
     );
   };
 
-  public get = async <T>(
-    builder: GETBuilder,
-    schema: ZodType<T>,
-  ): Promise<T> => {
-    return this.noBodyRequest('GET', builder, schema);
+  public unsetProxy = (): void => {
+    this._proxy = undefined;
   };
+
+  public get = async <T>(builder: GETBuilder, schema: ZodType<T>): Promise<T> =>
+    await this.noBodyRequest('GET', builder, schema);
 
   public delete = async <T>(
     builder: GETBuilder,
     schema: ZodType<T>,
-  ): Promise<T> => {
-    return this.noBodyRequest('DELETE', builder, schema);
-  };
+  ): Promise<T> => await this.noBodyRequest('DELETE', builder, schema);
 
   public post = async <T>(
     builder: POSTBuilder,
@@ -148,7 +143,7 @@ export class HttpToolKit {
 
     const response = await fetch(`${API_URL}${builder.path}`, {
       headers,
-      dispatcher: this.dispatcher as any, // fuck undici-types
+      proxy: this._proxy,
       method: 'POST',
       body,
     });
@@ -170,7 +165,7 @@ export class HttpToolKit {
       method: 'POST',
       headers: await this.prepareDPoP({ method: 'POST', path: builder.path }),
       body: builder.body,
-      dispatcher: this.dispatcher as any, // fuck undici-types
+      proxy: this._proxy,
     });
 
     return await this.handle<T>(

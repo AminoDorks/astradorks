@@ -1,14 +1,14 @@
 import { AstraOptions } from '../schemas/options';
 import { HttpToolKit } from './httptoolkit';
-import { transformProxy } from '../util/helpers';
 import { NdcService } from '../services/ndc-service';
-import initLogger from '../util/logger';
 import { SecurityService } from '../services/security-service';
 import { MediaUpload, MediaUploadSchema } from '../schemas/responses';
 import { BuffersUnion } from '../schemas/http';
 import { UserService } from '../services/user-service';
 import { Account } from '../schemas';
 import { ThreadService } from '../services/thread-service';
+import { PostService } from '../services/post-service';
+import initLogger from '../util/logger';
 
 export class AstraDorks {
   private options: AstraOptions;
@@ -18,6 +18,7 @@ export class AstraDorks {
   private securityService?: SecurityService;
   private userService?: UserService;
   private threadService?: ThreadService;
+  private postService?: PostService;
 
   constructor(options: AstraOptions = {}) {
     this.httptoolkit = options.httptoolkit || new HttpToolKit();
@@ -68,9 +69,19 @@ export class AstraDorks {
     return this.threadService;
   }
 
-  set proxy(proxy: string) {
-    this.httptoolkit.proxy = transformProxy(proxy);
+  get post(): PostService {
+    if (!this.postService)
+      this.postService = new PostService(this.httptoolkit, this.options.ndcId);
+    return this.postService;
   }
+
+  set proxy(proxy: string) {
+    this.httptoolkit.proxy = proxy;
+  }
+
+  public unsetProxy = (): void => {
+    this.httptoolkit.unsetProxy();
+  };
 
   public as = (ndcId: number): AstraDorks => {
     return new AstraDorks({ ...this.options, ndcId, account: this.account });
