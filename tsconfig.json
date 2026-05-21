@@ -17,7 +17,6 @@
     "outDir": "./dist",
     "rootDir": "./src",
 
-    // Imports без расширений
     "allowImportingTsExtensions": false,
     "rewriteRelativeImportExtensions": true,
 
