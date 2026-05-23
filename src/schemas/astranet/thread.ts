@@ -5,9 +5,9 @@ import { SegmentEnum } from '../usable';
 
 export const ThreadSchema = z.object({
   threadId: z.string(),
-  alertOption: z.number(),
+  alertOption: z.number().optional(),
   author: ShortProfileSchema,
-  condition: z.number(),
+  condition: z.number().optional(),
   content: z.string(),
   createdTime: z.string(),
   extensions: z.object({
@@ -15,22 +15,17 @@ export const ThreadSchema = z.object({
     language: SegmentEnum,
     membersCanInvite: z.boolean(),
   }),
-  icon: z.string(),
+  icon: z.string().optional(),
   isPinned: z.boolean(),
   lastReadTime: z.string(),
   latestActivityTime: z.string(),
   membersCount: z.number(),
-  membersQuota: z.number(),
-  membersSummary: z.array(z.any()),
-  membershipStatus: z.number(),
   mentionCount: z.number(),
   modifiedTime: z.string(),
   ndcId: z.number(),
-  needHidden: z.boolean(),
   status: z.number(),
   title: z.string(),
   type: z.number(),
-  uid: z.string(),
   unreadCount: z.number(),
 });
 
