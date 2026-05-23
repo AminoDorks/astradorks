@@ -1,9 +1,15 @@
 import { STATIC_DEVICE_ID } from '../constants';
 import { HttpToolKit } from '../core/httptoolkit';
 import { Account } from '../schemas';
-import { Login, LoginSchema } from '../schemas/responses';
+import { DPoPKeys } from '../schemas/crypto';
+import {
+  BasicResponse,
+  BasicResponseSchema,
+  Login,
+  LoginSchema,
+} from '../schemas/responses';
 import { cacheGet, cacheSet, initCache } from '../util/cache';
-import { generateDPoPKeys, isJWTExpired } from '../util/crypto';
+import { generateDPoPKeys, generateSHA1, isJWTExpired } from '../util/crypto';
 import { AstraError } from '../util/errors';
 
 export class SecurityService {
@@ -19,6 +25,28 @@ export class SecurityService {
     if (!this._account) throw new AstraError('Unauthorized');
     return this._account;
   }
+
+  private cacheAccount = (
+    email: string,
+    password: string,
+    dpopKeys: DPoPKeys,
+    response: Login,
+  ): Account => {
+    this.httptoolkit.credentials = {
+      sessionId: response.sid,
+      deviceId: STATIC_DEVICE_ID,
+      userId: response.auid,
+    };
+
+    cacheSet(`${email}:${password}`, {
+      account: response.account,
+      sid: response.sid,
+      deviceId: STATIC_DEVICE_ID,
+      DPoPKeys: dpopKeys,
+    });
+
+    return (this._account = response.account);
+  };
 
   public login = async (
     email: string,
@@ -61,19 +89,42 @@ export class SecurityService {
       LoginSchema,
     );
 
-    this.httptoolkit.credentials = {
-      sessionId: response.sid,
-      deviceId: STATIC_DEVICE_ID,
-      userId: response.auid,
-    };
+    return this.cacheAccount(email, password, dpopKeys, response);
+  };
 
-    cacheSet(`${email}:${password}`, {
-      account: response.account,
-      sid: response.sid,
-      deviceId: STATIC_DEVICE_ID,
-      DPoPKeys: dpopKeys,
-    });
+  public refresh = async (userId?: string): Promise<Account> => {
+    let dpopKeys = this.httptoolkit.dpopKeys;
 
-    return (this._account = response.account);
+    if (!dpopKeys) {
+      dpopKeys = generateDPoPKeys();
+      await initCache();
+
+      this.httptoolkit.dpopKeys = dpopKeys;
+    }
+
+    const targetUserId = userId || this.account.uid;
+
+    if (!targetUserId) throw new AstraError('Unauthorized');
+
+    const timestamp = Date.now();
+
+    const response = await this.httptoolkit.post<Login>(
+      {
+        path: '/g/s/auth/refresh',
+        body: {
+          secret: `31 AvgustDaun ${targetUserId} 127.0.0.1 1 a917afd37efb03fbacfb7263e5e4c5509bef7eb5 ${timestamp} ${generateSHA1(`${targetUserId}127.0.0.1${timestamp}`).slice(0, 20)}`,
+          deviceID: STATIC_DEVICE_ID,
+          ...dpopKeys,
+        },
+      },
+      LoginSchema,
+    );
+
+    return this.cacheAccount(
+      response.account.email,
+      'AvgustDaun',
+      dpopKeys,
+      response,
+    );
   };
 }

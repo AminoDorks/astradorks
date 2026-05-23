@@ -74,3 +74,6 @@ export const generateDPoP = async (
     })
     .sign(Buffer.from(dpopKeys.dpopPublicKey, 'base64url'));
 };
+
+export const generateSHA1 = (data: string): string =>
+  createHash('sha1').update(data, 'utf8').digest('hex').toString();
