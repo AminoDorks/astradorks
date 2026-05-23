@@ -75,7 +75,7 @@ export const ShortProfileSchema = z.object({
   icon: z.string(),
   isNicknameVerified: z.boolean(),
   level: z.number(),
-  membershipStatus: z.number(),
+  membershipStatus: z.number().nullable(),
   nickname: z.string(),
   reputation: z.number(),
   role: z.number(),
