@@ -17,6 +17,21 @@ export const ThreadSchema = z.object({
   }),
   icon: z.string(),
   isPinned: z.boolean(),
+  lastReadTime: z.string(),
+  latestActivityTime: z.string(),
+  membersCount: z.number(),
+  membersQuota: z.number(),
+  membersSummary: z.array(z.any()),
+  membershipStatus: z.number(),
+  mentionCount: z.number(),
+  modifiedTime: z.string(),
+  ndcId: z.number(),
+  needHidden: z.boolean(),
+  status: z.number(),
+  title: z.string(),
+  type: z.number(),
+  uid: z.string(),
+  unreadCount: z.number(),
 });
 
 export type Thread = z.infer<typeof ThreadSchema>;
