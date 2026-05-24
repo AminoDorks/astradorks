@@ -13,6 +13,7 @@ import { ThreadSchema } from './astranet/thread';
 import { MessageSchema } from './astranet/message';
 import { ActiveCategorySchema } from './astranet/active-category';
 import { object } from 'zod/v3';
+import { NoteSchema } from './astranet/note';
 
 export const BasicResponseSchema = z.object({
   'api:duration': z.string(),
@@ -119,6 +120,11 @@ export const GetBlogSchema = z.object({
   blog: BlogSchema,
 });
 
+export const GetNotesSchema = z.object({
+  ...BasicResponseSchema.shape,
+  noteList: z.array(NoteSchema),
+});
+
 export type BasicResponse = z.infer<typeof BasicResponseSchema>;
 export type GetCommunity = z.infer<typeof GetCommunitySchema>;
 export type GetCommunities = z.infer<typeof GetCommunitiesSchema>;
@@ -137,3 +143,4 @@ export type GetActivity = z.infer<typeof GetActivitySchema>;
 export type GetFeed = z.infer<typeof GetFeedSchema>;
 export type GetUserProfiles = z.infer<typeof GetUserProfilesSchema>;
 export type GetBlog = z.infer<typeof GetBlogSchema>;
+export type GetNotes = z.infer<typeof GetNotesSchema>;

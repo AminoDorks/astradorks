@@ -7,6 +7,7 @@ import {
   Sizing,
   Thread,
 } from '../schemas';
+import { Note } from '../schemas/astranet/note';
 import {
   BasicResponse,
   BasicResponseSchema,
@@ -16,6 +17,8 @@ import {
   GetMessages,
   GetMessageSchema,
   GetMessagesSchema,
+  GetNotes,
+  GetNotesSchema,
   GetThread,
   GetThreads,
   GetThreadSchema,
@@ -135,4 +138,14 @@ export class ThreadService {
       },
       BasicResponseSchema,
     );
+
+  public notes = async (
+    { start, size }: Sizing = { start: 0, size: 200 },
+  ): Promise<Note[]> =>
+    (
+      await this.httptoolkit.get<GetNotes>(
+        { path: `/g/s/saved/note?start=${start}&size=${size}` },
+        GetNotesSchema,
+      )
+    ).noteList;
 }

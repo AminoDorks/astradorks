@@ -6,6 +6,7 @@ export * from './astranet/blog';
 export * from './astranet/thread';
 export * from './astranet/message';
 export * from './astranet/active-category';
+export * from './astranet/note';
 
 export * from './cache';
 export * from './usable';
