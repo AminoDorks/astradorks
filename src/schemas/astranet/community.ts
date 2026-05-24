@@ -25,7 +25,7 @@ export const CommunitySchema = z.object({
   status: z.number(),
   tagline: z.string(),
   templateId: z.number(),
-  themePack: ThemePackSchema,
+  themePack: ThemePackSchema.optional().nullable(),
   updatedTime: z.string(),
 });
 
