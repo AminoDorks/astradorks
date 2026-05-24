@@ -1,6 +1,6 @@
 import { STATIC_DEVICE_ID } from '../constants';
 import { HttpToolKit } from '../core/httptoolkit';
-import { Account } from '../schemas';
+import { Account, CachedUnit } from '../schemas';
 import { DPoPKeys } from '../schemas/crypto';
 import {
   BasicResponse,
@@ -90,6 +90,21 @@ export class SecurityService {
     );
 
     return this.cacheAccount(email, password, dpopKeys, response);
+  };
+
+  public cacheLogin = async (
+    email: string,
+    password: string,
+    unit: CachedUnit,
+  ): Promise<Account> => {
+    this.httptoolkit.credentials = {
+      sessionId: unit.sid,
+      deviceId: unit.deviceId,
+      userId: unit.account.uid,
+    };
+    this.httptoolkit.dpopKeys = unit.DPoPKeys;
+
+    return (this._account = unit.account);
   };
 
   public refresh = async (userId?: string): Promise<Account> => {
