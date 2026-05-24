@@ -12,7 +12,7 @@ export const NoteSchema = z.object({
     .object({
       forwardedFrom: z
         .object({
-          nickname: z.string(),
+          nickname: z.string().optional(),
           originalChatId: z.string(),
           originalMessageId: z.string(),
           uid: z.string(),
