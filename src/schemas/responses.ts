@@ -30,6 +30,11 @@ export const LoginSchema = z.object({
   userProfile: ProfileSchema,
 });
 
+export const GetCommunitySchema = z.object({
+  ...BasicResponseSchema.shape,
+  community: CommunitySchema,
+});
+
 export const GetCommunitiesSchema = z.object({
   ...BasicResponseSchema.shape,
   communityList: z.array(CommunitySchema),
@@ -115,6 +120,7 @@ export const GetBlogSchema = z.object({
 });
 
 export type BasicResponse = z.infer<typeof BasicResponseSchema>;
+export type GetCommunity = z.infer<typeof GetCommunitySchema>;
 export type GetCommunities = z.infer<typeof GetCommunitiesSchema>;
 export type Login = z.infer<typeof LoginSchema>;
 export type MediaUpload = z.infer<typeof MediaUploadSchema>;

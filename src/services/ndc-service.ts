@@ -8,6 +8,8 @@ import {
   GetActivitySchema,
   GetCommunities,
   GetCommunitiesSchema,
+  GetCommunity,
+  GetCommunitySchema,
   GetFeed,
   GetFeedSchema,
   GetThreads,
@@ -49,6 +51,14 @@ export class NdcService {
         GetCommunitiesSchema,
       )
     ).communityList;
+
+  public get = async (ndcId: number): Promise<Community> =>
+    (
+      await this.httptoolkit.get<GetCommunity>(
+        { path: `/g/s-x${ndcId}/community` },
+        GetCommunitySchema,
+      )
+    ).community;
 
   public many = async (
     sizing: Sizing = { start: 0, size: 25 },
