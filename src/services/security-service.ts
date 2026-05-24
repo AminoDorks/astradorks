@@ -92,11 +92,7 @@ export class SecurityService {
     return this.cacheAccount(email, password, dpopKeys, response);
   };
 
-  public cacheLogin = async (
-    email: string,
-    password: string,
-    unit: CachedUnit,
-  ): Promise<Account> => {
+  public loginByUnit = async (unit: CachedUnit): Promise<Account> => {
     this.httptoolkit.credentials = {
       sessionId: unit.sid,
       deviceId: unit.deviceId,
