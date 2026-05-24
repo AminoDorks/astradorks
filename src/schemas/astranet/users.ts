@@ -43,7 +43,7 @@ export const ProfileSchema = z.object({
   aminoId: z.string(),
   blogsCount: z.number(),
   commentsCount: z.number(),
-  content: z.string(),
+  content: z.string().optional(),
   createdTime: z.string(),
   followingStatus: z.number(),
   icon: z.string(),
