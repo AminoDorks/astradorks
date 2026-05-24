@@ -176,4 +176,7 @@ export class HttpToolKit {
       schema,
     );
   };
+
+  public raw = async (url: string): Promise<string | undefined> =>
+    (await fetch(url, { proxy: this._proxy })).body?.text();
 }

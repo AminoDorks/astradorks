@@ -9,6 +9,7 @@ import { Account } from '../schemas';
 import { ThreadService } from '../services/thread-service';
 import { PostService } from '../services/post-service';
 import initLogger from '../util/logger';
+import { SITE_URL } from '../constants';
 
 export class AstraDorks {
   private options: AstraOptions;
@@ -94,4 +95,13 @@ export class AstraDorks {
         MediaUploadSchema,
       )
     ).mediaValue;
+
+  public diagnostic = async (): Promise<boolean> => {
+    try {
+      await this.httptoolkit.raw(SITE_URL);
+      return true;
+    } catch {
+      return false;
+    }
+  };
 }
