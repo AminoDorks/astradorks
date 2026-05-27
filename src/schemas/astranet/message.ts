@@ -15,6 +15,8 @@ export const MessageSchema = z.object({
   type: z.number(),
   uid: z.string(),
   author: ShortProfileSchema,
+  mediaValue: z.string().optional(),
+  replyMessageId: z.string().optional(),
 });
 
 export type Message = z.infer<typeof MessageSchema>;
