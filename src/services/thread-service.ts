@@ -148,4 +148,29 @@ export class ThreadService {
         GetNotesSchema,
       )
     ).noteList;
+
+  public create = async (
+    title: string,
+    content: string,
+    icon: string,
+    initialMessageContent: string | null,
+    inviteeUids: string[] = [],
+  ): Promise<Thread> =>
+    (
+      await this.httptoolkit.post<GetThread>(
+        {
+          path: `${this.endpoint}/chat/thread`,
+          body: {
+            content,
+            title,
+            icon,
+            inviteeUids,
+            type: 0,
+            publishToGlobal: 0,
+            initialMessageContent,
+          },
+        },
+        GetThreadSchema,
+      )
+    ).thread;
 }

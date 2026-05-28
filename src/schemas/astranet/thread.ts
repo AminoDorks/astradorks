@@ -19,13 +19,13 @@ export const ThreadSchema = z.object({
   lastReadTime: z.string(),
   latestActivityTime: z.string(),
   membersCount: z.number(),
-  mentionCount: z.number(),
+  mentionCount: z.number().optional(),
   modifiedTime: z.string(),
   ndcId: z.number(),
   status: z.number(),
   title: z.string(),
   type: z.number(),
-  unreadCount: z.number(),
+  unreadCount: z.number().optional(),
 });
 
 export type Thread = z.infer<typeof ThreadSchema>;
