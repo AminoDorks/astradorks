@@ -1,7 +1,7 @@
 {
   "name": "astranet",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A powerful TypeScript library for testsite.astranetapp.com",
   "author": "celt_is_god",
   "main": "./dist/index.js",
