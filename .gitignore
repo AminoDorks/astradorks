@@ -37,3 +37,4 @@ cache.json
 # custom
 
 test.ts
+.npmrc

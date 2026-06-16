@@ -1,6 +1,9 @@
 {
-  "name": "astradorks",
+  "name": "astranet",
   "type": "module",
+  "version": "1.0.0",
+  "description": "A powerful TypeScript library for testsite.astranetapp.com",
+  "author": "celt_is_god",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -11,12 +14,32 @@
   },
   "files": [
     "dist",
-    "README.MD"
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "aminoapps",
+    "astranet",
+    "typescript",
+    "wrapper",
+    "bun",
+    "astranetapp",
+    "amino"
   ],
   "scripts": {
     "build": "bun run build.ts",
-    "test": "bun run src/test.ts"
+    "test": "bun run src/test.ts",
+    "prepublishOnly": "bun run build"
   },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AminoDorks/astradorks.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AminoDorks/astradorks/issues"
+  },
+  "homepage": "https://github.com/AminoDorks/astradorks#readme",
   "devDependencies": {
     "@types/bun": "latest",
     "typescript": "^5"
